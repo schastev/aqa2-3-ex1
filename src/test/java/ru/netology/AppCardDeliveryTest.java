@@ -57,7 +57,7 @@ public class AppCardDeliveryTest {
     public void positiveTest() {
         setDate(5);
         fillIn("name", "phone", "agreement", "city", "button");
-        $(withText("Успешно!")).shouldBe(visible, Duration.ofSeconds(15));
+        $(withText("Успешо!")).shouldBe(visible, Duration.ofSeconds(15));
     }
 
     @Test
@@ -65,7 +65,7 @@ public class AppCardDeliveryTest {
         $("[data-test-id='city'] .input__control").sendKeys("Корсаков");
         setDate(5);
         fillIn("name", "phone", "agreement", "button");
-        $("[data-test-id='city'].input_invalid").shouldBe(visible).shouldHave(exactText("Доставка в выбранный город недоступна"));
+        $("[data-test-id='city'].input_invalid").shouldBe(visible).shouldHave(exactText("Доставк в выбранный город недоступна"));
     }
 
     @Test
@@ -73,14 +73,14 @@ public class AppCardDeliveryTest {
         $("[data-test-id='city'] .input__control").sendKeys(UserGenerator.generateCity("en"));
         setDate(5);
         fillIn("name", "phone", "agreement", "button");
-        $("[data-test-id='city'].input_invalid").shouldBe(visible).shouldHave(exactText("Доставка в выбранный город недоступна"));
+        $("[data-test-id='city'].input_invalid").shouldBe(visible).shouldHave(exactText("Доставк в выбранный город недоступна"));
     }
 
     @Test
     public void negativeNoCityTest() {
         setDate(5);
         fillIn("name", "phone", "agreement", "button");
-        $("[data-test-id='city'].input_invalid .input__sub").shouldBe(visible).shouldHave(exactText("Поле обязательно для заполнения"));
+        $("[data-test-id='city'].input_invalid .input__sub").shouldBe(visible).shouldHave(exactText("Пол обязательно для заполнения"));
     }
 
     @Test
@@ -88,7 +88,7 @@ public class AppCardDeliveryTest {
         $("[data-test-id='name'] .input__control").setValue(UserGenerator.generateName("en"));
         setDate(5);
         fillIn("phone", "agreement", "city", "button");
-        $("[data-test-id='name'].input_invalid .input__sub").shouldBe(visible).shouldHave(exactText("Имя и Фамилия указаные неверно. Допустимы только русские буквы, пробелы и дефисы."));
+        $("[data-test-id='name'].input_invalid .input__sub").shouldBe(visible).shouldHave(exactText("Им и Фамилия указаные неверно. Допустимы только русские буквы, пробелы и дефисы."));
     }
 
     @Test @Disabled
@@ -96,7 +96,7 @@ public class AppCardDeliveryTest {
         $("[data-test-id='name'] .input__control").setValue("Алёна");
         setDate(5);
         fillIn("phone", "agreement", "city", "button");
-        $(withText("Успешно!")).shouldBe(visible, Duration.ofSeconds(15));
+        $(withText("Успешо!")).shouldBe(visible, Duration.ofSeconds(15));
     }
 
     @Test
@@ -104,14 +104,14 @@ public class AppCardDeliveryTest {
         $("[data-test-id='name'] .input__control").setValue("А! овар,.");
         setDate(5);
         fillIn("phone", "agreement", "city", "button");
-        $("[data-test-id='name'].input_invalid .input__sub").shouldBe(visible).shouldHave(exactText("Имя и Фамилия указаные неверно. Допустимы только русские буквы, пробелы и дефисы."));
+        $("[data-test-id='name'].input_invalid .input__sub").shouldBe(visible).shouldHave(exactText("Им и Фамилия указаные неверно. Допустимы только русские буквы, пробелы и дефисы."));
     }
 
     @Test
     public void negativeNoNameTest() {
         setDate(5);
         fillIn("phone", "agreement", "city", "button");
-        $("[data-test-id='name'].input_invalid .input__sub").shouldBe(visible).shouldHave(exactText("Поле обязательно для заполнения"));
+        $("[data-test-id='name'].input_invalid .input__sub").shouldBe(visible).shouldHave(exactText("Пол обязательно для заполнения"));
     }
 
     @Test @Disabled
@@ -134,7 +134,7 @@ public class AppCardDeliveryTest {
     public void negativeNoPhoneTest() {
         setDate(5);
         fillIn("name", "agreement", "city", "button");
-        $("[data-test-id='phone'].input_invalid .input__sub").shouldBe(visible).shouldHave(exactText("Поле обязательно для заполнения"));
+        $("[data-test-id='phone'].input_invalid .input__sub").shouldBe(visible).shouldHave(exactText("Пол обязательно для заполнения"));
     }
 
     @Test
@@ -144,7 +144,7 @@ public class AppCardDeliveryTest {
         $("[data-test-id='city'] .input__control").shouldHave(attribute("value", "Москва"));
         setDate(5);
         fillIn("name", "phone", "agreement", "button");
-        $(withText("Успешно!")).shouldBe(visible, Duration.ofSeconds(15));
+        $(withText("Успешо!")).shouldBe(visible, Duration.ofSeconds(15));
     }
 
     @Test
@@ -169,7 +169,7 @@ public class AppCardDeliveryTest {
 
         $(".button").click();
         fillIn("name", "phone", "agreement", "city", "button");
-        $(withText("Успешно!")).shouldBe(visible, Duration.ofSeconds(15));
+        $(withText("Успешо!")).shouldBe(visible, Duration.ofSeconds(15));
         assertEquals(actual, expected);
     }
 
@@ -179,6 +179,6 @@ public class AppCardDeliveryTest {
         setDate(7);
         $(".button").click();
         $(".button.button_size_s").shouldHave(exactText("Перепланировать")).shouldBe(visible, Duration.ofSeconds(7)).click();
-        $(withText("Успешно!")).shouldBe(visible, Duration.ofSeconds(15));
+        $(withText("Успешо!")).shouldBe(visible, Duration.ofSeconds(15));
     }
 }
