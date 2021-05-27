@@ -1,6 +1,7 @@
 package ru.netology;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.Keys;
 import ru.netology.domain.UserGenerator;
@@ -90,7 +91,7 @@ public class AppCardDeliveryTest {
         $("[data-test-id='name'].input_invalid .input__sub").shouldBe(visible).shouldHave(exactText("Имя и Фамилия указаные неверно. Допустимы только русские буквы, пробелы и дефисы."));
     }
 
-    @Test
+    @Test @Disabled
     public void yoNameTest() {
         $("[data-test-id='name'] .input__control").setValue("Алёна");
         setDate(5);
@@ -113,7 +114,7 @@ public class AppCardDeliveryTest {
         $("[data-test-id='name'].input_invalid .input__sub").shouldBe(visible).shouldHave(exactText("Поле обязательно для заполнения"));
     }
 
-    @Test
+    @Test @Disabled
     public void negativeAnyPhoneTest() {
         $("[data-test-id='phone'] .input__control").setValue("000");
         setDate(5);
