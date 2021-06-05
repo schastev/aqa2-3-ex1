@@ -1,7 +1,9 @@
 package ru.netology;
 
+import com.codeborne.selenide.Configuration;
+import com.codeborne.selenide.SelenideElement;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.Keys;
 import ru.netology.domain.UserGenerator;
@@ -10,7 +12,6 @@ import java.time.Duration;
 import java.util.*;
 
 import static com.codeborne.selenide.Condition.*;
-import static com.codeborne.selenide.Selectors.withText;
 import static com.codeborne.selenide.Selenide.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -18,6 +19,17 @@ public class AppCardDeliveryTest {
     Date date = new Date();
     Calendar cal = Calendar.getInstance();
     UserGenerator.User user = UserGenerator.Registration.generateUser("ru");
+    private SelenideElement dateField = $("[data-test-id='date'] .input__control");
+    private SelenideElement cityField = $("[data-test-id='city'] .input__control");
+    private SelenideElement phoneField = $("[data-test-id='phone'] .input__control");
+    private SelenideElement nameField = $("[data-test-id='name'] .input__control");
+    private SelenideElement agreementTick = $("[data-test-id='agreement']");
+    private SelenideElement successNotification = $("[data-test-id='success-notification']");
+
+    @BeforeAll
+    static void headless() {
+        Configuration.headless = true;
+    }
 
     @BeforeEach
     public void setUpDate() {
@@ -27,129 +39,145 @@ public class AppCardDeliveryTest {
 
     public void setDate(int shift) {
         //this hack is here because .clear() doesn't work :(
-        $("[data-test-id='date'] .input__control").sendKeys(Keys.CONTROL + "A");
-        $("[data-test-id='date'] .input__control").sendKeys(Keys.BACK_SPACE);
-        $("[data-test-id='date'] .input__control").setValue(UserGenerator.generateDate(shift));
+        dateField.sendKeys(Keys.CONTROL + "A");
+        dateField.sendKeys(Keys.BACK_SPACE);
+        dateField.setValue(UserGenerator.generateDate(shift));
     }
 
-    public void fillIn(String... args) {
-        for (String arg : args) {
-            switch (arg) {
-                case "name":
-                    $("[data-test-id='name'] .input__control").setValue(user.getName());
-                    break;
-                case "city":
-                    $("[data-test-id='city'] .input__control").sendKeys(user.getCity());
-                    break;
-                case "phone":
-                    $("[data-test-id='phone'] .input__control").setValue(user.getPhone());
-                    break;
-                case "agreement":
-                    $("[data-test-id='agreement']").click();
-                    break;
-                case "button":
-                    $(".button").click();
-            }
+    public void inputName(boolean set) {
+        if (set) {
+            nameField.setValue(user.getName());
         }
+    }
+
+    public void inputCity(boolean set) {
+        if (set) {
+            cityField.sendKeys(user.getCity());
+        }
+    }
+
+    public void inputPhone(boolean set) {
+        if (set) {
+            phoneField.setValue(user.getPhone());
+        }
+    }
+
+    public void tickAgreement(boolean set) {
+        if (set) {
+            agreementTick.click();
+        }
+    }
+
+    public void clickButton(boolean set) {
+        if (set) {
+            $(".button").click();
+        }
+    }
+
+    public void fillIn(boolean name, boolean city, boolean phone, boolean agreement, boolean button) {
+        inputName(name);
+        inputCity(city);
+        inputPhone(phone);
+        tickAgreement(agreement);
+        clickButton(button);
     }
 
     @Test
     public void positiveTest() {
         setDate(5);
-        fillIn("name", "phone", "agreement", "city", "button");
-        $(withText("Успешно!")).shouldBe(visible, Duration.ofSeconds(15));
+        fillIn(true, true, true, true, true);
+        successNotification.shouldBe(visible, Duration.ofSeconds(15));
     }
 
     @Test
     public void negativeCityOutOfBoundsTest() {
-        $("[data-test-id='city'] .input__control").sendKeys("Корсаков");
+        cityField.sendKeys("Корсаков");
         setDate(5);
-        fillIn("name", "phone", "agreement", "button");
+        fillIn(true, false, true, true, true);
         $("[data-test-id='city'].input_invalid").shouldBe(visible).shouldHave(exactText("Доставка в выбранный город недоступна"));
     }
 
     @Test
     public void negativeNonRussianCityTest() {
-        $("[data-test-id='city'] .input__control").sendKeys(UserGenerator.generateCity("en"));
+        cityField.sendKeys(UserGenerator.generateCity("en"));
         setDate(5);
-        fillIn("name", "phone", "agreement", "button");
+        fillIn(true, false, true, true, true);
         $("[data-test-id='city'].input_invalid").shouldBe(visible).shouldHave(exactText("Доставка в выбранный город недоступна"));
     }
 
     @Test
     public void negativeNoCityTest() {
         setDate(5);
-        fillIn("name", "phone", "agreement", "button");
+        fillIn(true, false, true, true, true);
         $("[data-test-id='city'].input_invalid .input__sub").shouldBe(visible).shouldHave(exactText("Поле обязательно для заполнения"));
     }
 
     @Test
     public void negativeNonRussianNameTest() {
-        $("[data-test-id='name'] .input__control").setValue(UserGenerator.generateName("en"));
-        setDate(5);
-        fillIn("phone", "agreement", "city", "button");
+        nameField.setValue(UserGenerator.generateName("en"));
+        fillIn(false, true, true, true, true);
         $("[data-test-id='name'].input_invalid .input__sub").shouldBe(visible).shouldHave(exactText("Имя и Фамилия указаные неверно. Допустимы только русские буквы, пробелы и дефисы."));
     }
 
     @Test
     public void yoNameTest() {
-        $("[data-test-id='name'] .input__control").setValue("Алёна");
+        nameField.setValue("Алёна");
         setDate(5);
-        fillIn("phone", "agreement", "city", "button");
-        $(withText("Успешно!")).shouldBe(visible, Duration.ofSeconds(15));
+        fillIn(false, true, true, true, true);
+        successNotification.shouldBe(visible, Duration.ofSeconds(15));
     }
 
     @Test
     public void negativeNonAlphaNameTest() {
-        $("[data-test-id='name'] .input__control").setValue("А! овар,.");
+        nameField.setValue("А! овар,.");
         setDate(5);
-        fillIn("phone", "agreement", "city", "button");
+        fillIn(false, true, true, true, true);
         $("[data-test-id='name'].input_invalid .input__sub").shouldBe(visible).shouldHave(exactText("Имя и Фамилия указаные неверно. Допустимы только русские буквы, пробелы и дефисы."));
     }
 
     @Test
     public void negativeNoNameTest() {
         setDate(5);
-        fillIn("phone", "agreement", "city", "button");
+        fillIn(false, true, true, true, true);
         $("[data-test-id='name'].input_invalid .input__sub").shouldBe(visible).shouldHave(exactText("Поле обязательно для заполнения"));
     }
 
     @Test
     public void negativeAnyPhoneTest() {
-        $("[data-test-id='phone'] .input__control").setValue("000");
+        phoneField.setValue("000");
         setDate(5);
-        fillIn("name", "agreement", "city", "button");
+        fillIn(true, true, false, true, true);
         $("[data-test-id='phone'].input_invalid .input__sub").shouldBe(visible);
     }
 
     @Test
     public void negativeNonNumPhoneTest() {
-        $("[data-test-id='phone'] .input__control").setValue("lksajdahfdf");
+        phoneField.setValue("lksajdahfdf");
         setDate(5);
-        fillIn("name", "agreement", "city", "button");
-        $("[data-test-id='phone'] .input__control").shouldHave(attribute("value", "+"));
+        fillIn(true, true, false, true, true);
+        phoneField.shouldHave(attribute("value", "+"));
     }
 
     @Test
     public void negativeNoPhoneTest() {
         setDate(5);
-        fillIn("name", "agreement", "city", "button");
+        fillIn(true, true, false, true, true);
         $("[data-test-id='phone'].input_invalid .input__sub").shouldBe(visible).shouldHave(exactText("Поле обязательно для заполнения"));
     }
 
     @Test
     public void autofillTest() {
-        $("[data-test-id='city'] .input__control").sendKeys("Мо");
+        cityField.sendKeys("Мо");
         $$(".menu-item .menu-item__control").find(exactText("Москва")).click();
-        $("[data-test-id='city'] .input__control").shouldHave(attribute("value", "Москва"));
+        cityField.shouldHave(attribute("value", "Москва"));
         setDate(5);
-        fillIn("name", "phone", "agreement", "button");
-        $(withText("Успешно!")).shouldBe(visible, Duration.ofSeconds(15));
+        fillIn(true, false, true, true, true);
+        successNotification.shouldBe(visible, Duration.ofSeconds(15));
     }
 
     @Test
     public void calendarWidgetTest() {
-        $("[data-test-id='date'] .input__control").click();
+        dateField.click();
 
         Calendar newCal = Calendar.getInstance();//get a new calendar to track the new date
         newCal.add(newCal.DATE, 7);
@@ -160,7 +188,7 @@ public class AppCardDeliveryTest {
 
         //set up the check of the new month's number
         $$(".calendar__row .calendar__day[data-day]").find(exactText(newDate)).click();//set the new date
-        String actual = $("[data-test-id='date'] .input__control").getValue().substring(3, 5);//get the numeric value of the new month
+        String actual = dateField.getValue().substring(3, 5);//get the numeric value of the new month
         int temp = newCal.get(newCal.MONTH) + 1; //get the numeric value of the expected month (zero-indexed)
         String expected = temp + ""; //convert it to string
         if (temp < 10) {//pad with a zero if September or earlier
@@ -168,17 +196,17 @@ public class AppCardDeliveryTest {
         }
 
         $(".button").click();
-        fillIn("name", "phone", "agreement", "city", "button");
-        $(withText("Успешно!")).shouldBe(visible, Duration.ofSeconds(15));
+        fillIn(true, true, true, true, true);
+        successNotification.shouldBe(visible, Duration.ofSeconds(15));
         assertEquals(actual, expected);
     }
 
     @Test
     public void rescheduleTest() {
-        fillIn("city", "name", "phone", "agreement", "button");
+        fillIn(true, true, true, true, true);
         setDate(7);
-        $(".button").click();
+        clickButton(true);
         $(".button.button_size_s").shouldHave(exactText("Перепланировать")).shouldBe(visible, Duration.ofSeconds(7)).click();
-        $(withText("Успешно!")).shouldBe(visible, Duration.ofSeconds(15));
+        successNotification.shouldBe(visible, Duration.ofSeconds(15));
     }
 }

@@ -1,8 +1,6 @@
 package ru.netology.domain;
 
 import com.github.javafaker.Faker;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.Value;
 
 import java.time.LocalDate;
@@ -13,9 +11,9 @@ public class UserGenerator {
 
     private UserGenerator() {
     }
+
     public static String generateDate(int shift) {
-        String date = LocalDate.now().plusDays(shift).format(DateTimeFormatter.ofPattern("dd.MM.uuuu"));
-        return date;
+        return LocalDate.now().plusDays(shift).format(DateTimeFormatter.ofPattern("dd.MM.uuuu"));
     }
 
     public static String generateCity(String locale) {
@@ -32,8 +30,7 @@ public class UserGenerator {
 
     public static String generatePhone(String locale) {
         Faker faker = new Faker(Locale.forLanguageTag(locale));
-        String phone = faker.numerify("+############");
-        return phone;
+        return faker.numerify("+############");
     }
 
     public static class Registration {
@@ -41,8 +38,7 @@ public class UserGenerator {
         }
 
         public static User generateUser(String locale) {
-            User user = new User(generateCity(locale), generateName(locale), generatePhone(locale));
-            return user;
+            return new User(generateCity(locale), generateName(locale), generatePhone(locale));
         }
     }
 
@@ -52,7 +48,7 @@ public class UserGenerator {
         String name;
         String phone;
 
-        User(String city, String name, String phone){
+        User(String city, String name, String phone) {
             this.city = city;
             this.name = name;
             this.phone = phone;
